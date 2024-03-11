@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "369735755792",
+    "project_id": "music-online-authentication",
+    "storage_bucket": "music-online-authentication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369735755792:android:9de3bd8ce901613d6b4295",
+        "android_client_info": {
+          "package_name": "com.example.music_online_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmUjWqk8PH31PP1WwOhxWObV8pOoRHzeg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
