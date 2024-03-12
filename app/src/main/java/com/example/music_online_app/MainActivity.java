@@ -4,21 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.music_online_app.adapter.CategoryAdapter;
+import com.example.music_online_app.ListenerInterface.OnCategoryClickListener;
 import com.example.music_online_app.models.CategoryModels;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.ktx.Firebase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
+    TextView textView;
+    FirebaseAuth mAuth;
+
 
 
     @Override
@@ -34,7 +32,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
+
         recyclerView = findViewById(R.id.categories_recycler_view);
+        textView = findViewById(R.id.user_name);
+        textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         getCategoryFromFirebase();
@@ -51,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupCategoryRecyclerView(List<CategoryModels> categoryModels){
-        categoryAdapter = new CategoryAdapter(this, categoryModels, new OnItemClickListener() {
+        categoryAdapter = new CategoryAdapter(this, categoryModels, new OnCategoryClickListener() {
             @Override
             public void onItemClick(CategoryModels categoryModels) {
                 Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);

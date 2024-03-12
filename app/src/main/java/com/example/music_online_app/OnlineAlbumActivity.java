@@ -1,16 +1,27 @@
 package com.example.music_online_app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.music_online_app.ListenerInterface.OnSongListClickListener;
+import com.example.music_online_app.adapter.SongsListAdapter;
 import com.example.music_online_app.models.CategoryModels;
+import com.example.music_online_app.models.SongModels;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OnlineAlbumActivity extends AppCompatActivity {
 
@@ -34,7 +45,16 @@ public class OnlineAlbumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_album);
 
-        categoryModels = (CategoryModels) getIntent().getSerializableExtra("category");
+        Intent intent = getIntent();
+        categoryModels = (CategoryModels) intent.getSerializableExtra("category");
+
+        if(categoryModels == null){
+            Toast.makeText(this, "Không có dữ liệu", Toast.LENGTH_SHORT).show();
+            Intent newIntent = new Intent(this, MainActivity.class);
+            startActivity(newIntent);
+            finish();
+            return;
+        }
 
 
         //binding dữ liệu
@@ -47,5 +67,45 @@ public class OnlineAlbumActivity extends AppCompatActivity {
         Glide.with(imageView).load(categoryModels.getCoverUrl())
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
                 .into(imageView);
+
+
+
+        getListSongModelsFromFireBase();
+
+
+    }
+
+    public void getListSongModelsFromFireBase(){
+        FirebaseFirestore.getInstance().collection("Songs")
+                .get().addOnSuccessListener(v -> {
+                    List<SongModels> songModelsList = v.toObjects(SongModels.class);
+                    setUpRecyclerView(songModelsList);
+                });
+
+    }
+    public List<SongModels> getListSongInAlbum(List<String> songs, List<SongModels> songModelsList){
+        List<SongModels> songModels = new ArrayList<>();
+        for (String song: songs){
+            for (SongModels songModel: songModelsList){
+                if(song.equals(songModel.getId())){
+                    songModels.add(songModel);
+                }
+            }
+        }
+        return songModels;
+    }
+
+    private void setUpRecyclerView(List<SongModels> songModelsList){
+        SongsListAdapter songsListAdapter = new SongsListAdapter(
+                this,
+                getListSongInAlbum(categoryModels.getSongs(), songModelsList),
+                new OnSongListClickListener() {
+                    @Override
+                    public void onItemClick(SongModels songModels) {
+                    }
+                });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(songsListAdapter);
     }
 }

@@ -7,7 +7,7 @@ public class CategoryModels implements Serializable {
 
     String name;
     String coverUrl;
-    List<String> songsList;
+    List<String> songs;
     
     public CategoryModels(){
 
@@ -34,11 +34,11 @@ public class CategoryModels implements Serializable {
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
     }
-    public List<String> getSongsList() {
-        return songsList;
+    public List<String> getSongs() {
+        return songs;
     }
 
-    public void setSongsList(List<String> songsList) {
-        this.songsList = songsList;
+    public void setSongsList(List<String> songs) {
+        this.songs = songs;
     }
 }

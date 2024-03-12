@@ -21,11 +21,12 @@
             android:layout_centerVertical="true"/>
         
         <TextView
+            android:id="@+id/user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hello"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:gravity="center"/>
 
         <ImageView
