@@ -1,9 +1,13 @@
 package com.example.music_online_app.models;
 
-public class CategoryModels {
+import java.io.Serializable;
+import java.util.List;
+
+public class CategoryModels implements Serializable {
 
     String name;
     String coverUrl;
+    List<String> songsList;
     
     public CategoryModels(){
 
@@ -29,5 +33,12 @@ public class CategoryModels {
 
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
+    }
+    public List<String> getSongsList() {
+        return songsList;
+    }
+
+    public void setSongsList(List<String> songsList) {
+        this.songsList = songsList;
     }
 }

@@ -1,15 +1,23 @@
 package com.example.music_online_app.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.RoundedCorner;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.music_online_app.OnItemClickListener;
+import com.example.music_online_app.OnlineAlbumActivity;
 import com.example.music_online_app.R;
 import com.example.music_online_app.models.CategoryModels;
 
@@ -19,10 +27,20 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder>{
     private List<CategoryModels> categoryModels;
     private Context context;
+    private OnItemClickListener listener;
 
     public CategoryAdapter(Context context, List<CategoryModels> categoryModels){
         this.context = context;
         this.categoryModels = categoryModels;
+    }
+
+    public CategoryAdapter(
+            Context context,
+            List<CategoryModels> categoryModels,
+            OnItemClickListener onItemClickListener){
+        this.context = context;
+        this.categoryModels = categoryModels;
+        this.listener = onItemClickListener;
     }
 
     @NonNull
@@ -34,10 +52,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String image = categoryModels.get(position).getCoverUrl();
-        String name = categoryModels.get(position).getName();
+        holder.bind(categoryModels.get(position), listener);
+//
+//        String image = categoryModels.get(position).getCoverUrl();
+//        String name = categoryModels.get(position).getName();
+//
+//        holder.textView.setText(name);
+//        Glide.with(holder.imageView).load(image)
+//                .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
+//                .into(holder.imageView);
 
-        holder.textView.setText(name);
+
 
     }
 
@@ -57,6 +82,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
             textView = itemView.findViewById(R.id.name_text_view);
             imageView = itemView.findViewById(R.id.cover_image_view);
+
+
+        }
+        public void bind(final CategoryModels item, final OnItemClickListener listener) {
+            textView.setText(item.getName());
+            Glide.with(imageView).load(item.getCoverUrl())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
+                    .into(imageView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemClick(item);
+                }
+            });
         }
 
     }

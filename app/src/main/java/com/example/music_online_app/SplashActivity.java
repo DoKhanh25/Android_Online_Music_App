@@ -8,9 +8,13 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import com.example.music_online_app.authentication.LoginActivity;
+import com.example.music_online_app.models.CategoryModels;
 import com.example.music_online_app.offline.NoInternetActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -34,6 +38,7 @@ public class SplashActivity extends AppCompatActivity {
                 public void run() {
                     if(currentUser != null){
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
                         startActivity(intent);
                         finish();
                     } else {

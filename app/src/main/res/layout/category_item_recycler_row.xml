@@ -20,6 +20,7 @@
         android:id="@+id/name_text_view"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
+        android:textColor="@color/white"
         tools:text="English"
         />
 

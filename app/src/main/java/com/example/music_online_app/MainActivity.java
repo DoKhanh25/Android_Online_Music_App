@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         getCategoryFromFirebase();
+
+
     }
 
     public void getCategoryFromFirebase(){
@@ -46,7 +51,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupCategoryRecyclerView(List<CategoryModels> categoryModels){
-        categoryAdapter = new CategoryAdapter(this, categoryModels);
+        categoryAdapter = new CategoryAdapter(this, categoryModels, new OnItemClickListener() {
+            @Override
+            public void onItemClick(CategoryModels categoryModels) {
+                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
+                intent.putExtra("category", categoryModels);
+                startActivity(intent);
+                finish();
+
+            }
+        });
         recyclerView.setAdapter(categoryAdapter);
     }
 }
