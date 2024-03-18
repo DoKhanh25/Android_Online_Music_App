@@ -7,24 +7,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.music_online_app.ListenerInterface.OnSongListClickListener;
 import com.example.music_online_app.adapter.CategoryAdapter;
 import com.example.music_online_app.ListenerInterface.OnCategoryClickListener;
+import com.example.music_online_app.adapter.SectionListAdapter;
 import com.example.music_online_app.models.CategoryModels;
+import com.example.music_online_app.models.SongModels;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     CategoryAdapter categoryAdapter;
 
-    RecyclerView recyclerView;
+    SectionListAdapter sectionListAdapter;
+
+    RecyclerView recyclerView, section1RecyclerView;
 
     TextView textView;
 
@@ -42,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         recyclerView = findViewById(R.id.categories_recycler_view);
+        section1RecyclerView = findViewById(R.id.section_1_recycler_view);
         textView = findViewById(R.id.user_name);
         textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
 
@@ -50,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         getCategoryFromFirebase();
+        getSection1FromFirebase();
     }
+    // category
 
     public void getCategoryFromFirebase(){
 
@@ -58,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             turnOnShimmer(false);
-        }, 2000);
+        }, 2500);
 
         FirebaseFirestore.getInstance().collection("category")
                 .get().addOnSuccessListener(v -> {
@@ -66,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     setupCategoryRecyclerView(categoryModels);
                 });
     }
+
 
     public void setupCategoryRecyclerView(List<CategoryModels> categoryModels){
         categoryAdapter = new CategoryAdapter(this, categoryModels, new OnCategoryClickListener() {
@@ -82,6 +98,35 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
     }
+
+    // section 1
+    public void getSection1FromFirebase(){
+        FirebaseFirestore.getInstance().collection("sections").document("section1").get()
+                .addOnSuccessListener(s-> {
+                    CategoryModels categoryModels = s.toObject(CategoryModels.class);
+                    FirebaseFirestore.getInstance().collection("Songs").whereIn("id",categoryModels.getSongs()).get()
+                            .addOnSuccessListener(v->{
+                        List<SongModels> songModels = v.toObjects(SongModels.class);
+                        setupSectionRecyclerView(songModels);
+                    });
+                });
+
+    }
+
+    public void setupSectionRecyclerView(List<SongModels> songModelsList){
+        sectionListAdapter = new SectionListAdapter(getApplicationContext(), songModelsList, new OnSongListClickListener() {
+            @Override
+            public void onItemClick(SongModels songModels) {
+
+            }
+        });
+
+        section1RecyclerView.setAdapter(sectionListAdapter);
+        section1RecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
+
+
 
     private void turnOnShimmer(boolean turnOn){
         if(turnOn){

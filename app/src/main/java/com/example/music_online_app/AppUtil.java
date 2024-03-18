@@ -1,11 +1,18 @@
 package com.example.music_online_app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppUtil {
     public static boolean isNetworkAvailable(Context context){

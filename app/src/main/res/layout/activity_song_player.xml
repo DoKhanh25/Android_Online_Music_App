@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@color/black"
+    android:orientation="vertical"
+    tools:context=".SongPlayerActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Now Playing"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:id="@+id/song_effect_gif_view"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+        <ImageView
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_gravity="center"
+            android:id="@+id/cover_image_view" />
+
+    </FrameLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Song Name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:id="@+id/song_title_text_view"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Album"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        android:layout_marginTop="10dp"
+        android:id="@+id/album_text_view"/>
+
+    <androidx.media3.ui.PlayerView
+        android:layout_width="match_parent"
+        app:hide_on_touch="false"
+        app:show_timeout="0"
+        android:layout_marginTop="12dp"
+        android:layout_height="200dp"
+        android:id="@+id/player_view"/>
+
+
+
+
+
+</LinearLayout>
