@@ -43,7 +43,10 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     MaterialButton section1Button;
     CategoryModels section1Category;
+    CategoryModels section2Category;
     RelativeLayout section1Layout;
+    RelativeLayout section2Layout;
+    RecyclerView section2RecyclerView;
 
 
 
@@ -56,28 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.categories_recycler_view);
         section1RecyclerView = findViewById(R.id.section_1_recycler_view);
+        section2RecyclerView = findViewById(R.id.section_2_recycler_view);
         textView = findViewById(R.id.user_name);
         section1Button = findViewById(R.id.btn_section_1);
         shimmerFrameLayout = findViewById(R.id.shimmer_main);
         scrollView = findViewById(R.id.scroll_view);
         section1Layout = findViewById(R.id.section_1_main_layout);
+        section2Layout = findViewById(R.id.section_2_main_layout);
 
         textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
 
         getCategoryFromFirebase();
         getSection1FromFirebase();
+        getSection2FromFirebase();
 
-
-
-        section1Layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
-                intent.putExtra(CATEGORY_NAME_EXTRA, section1Category);
-                startActivity(intent);
-                finish();
-            }
-        });
     }
     // category
 
@@ -110,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(categoryAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
     }
 
     // section 1
@@ -122,13 +116,21 @@ public class MainActivity extends AppCompatActivity {
                     FirebaseFirestore.getInstance().collection("Songs").whereIn("id",categoryModels.getSongs()).get()
                             .addOnSuccessListener(v->{
                         List<SongModels> songModels = v.toObjects(SongModels.class);
-                        setupSectionRecyclerView(songModels);
+                        setupSection1RecyclerView(songModels);
                     });
                 });
-
+        section1Layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
+                intent.putExtra(CATEGORY_NAME_EXTRA, section1Category);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
-    public void setupSectionRecyclerView(List<SongModels> songModelsList){
+    public void setupSection1RecyclerView(List<SongModels> songModelsList){
         sectionListAdapter = new SectionListAdapter(getApplicationContext(), songModelsList, new OnSongListClickListener() {
             @Override
             public void onItemClick(SongModels songModels) {
@@ -138,6 +140,40 @@ public class MainActivity extends AppCompatActivity {
 
         section1RecyclerView.setAdapter(sectionListAdapter);
         section1RecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
+    public void getSection2FromFirebase(){
+        FirebaseFirestore.getInstance().collection("sections").document("section2").get()
+                .addOnSuccessListener(s-> {
+                    CategoryModels categoryModels = s.toObject(CategoryModels.class);
+                    this.section2Category = categoryModels;
+                    FirebaseFirestore.getInstance().collection("Songs").whereIn("id",categoryModels.getSongs()).get()
+                            .addOnSuccessListener(v->{
+                                List<SongModels> songModels = v.toObjects(SongModels.class);
+                                setupSection2RecyclerView(songModels);
+                            });
+                });
+        section2Layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
+                intent.putExtra(CATEGORY_NAME_EXTRA, section2Category);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
+    public void setupSection2RecyclerView(List<SongModels> songModelsList){
+        sectionListAdapter = new SectionListAdapter(getApplicationContext(), songModelsList, new OnSongListClickListener() {
+            @Override
+            public void onItemClick(SongModels songModels) {
+
+            }
+        });
+
+        section2RecyclerView.setAdapter(sectionListAdapter);
+        section2RecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
 
 
