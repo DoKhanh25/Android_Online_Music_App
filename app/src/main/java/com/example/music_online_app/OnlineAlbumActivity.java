@@ -31,6 +31,7 @@ public class OnlineAlbumActivity extends AppCompatActivity {
     private final String SONG_NAME_EXTRA = "songModels";
     private final String FIREBASE_SONG_COLLECTION = "Songs";
     private final String ALBUM_NAME = "albumName";
+    private final String BAR_CLICK = "isBarClick";
 
 
     CategoryModels categoryModels;
@@ -115,6 +116,7 @@ public class OnlineAlbumActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), SongPlayerActivity.class);
         intent.putExtra(SONG_NAME_EXTRA, songModels);
         intent.putExtra(ALBUM_NAME, categoryModels.getName());
+        intent.putExtra(BAR_CLICK, false);
         startActivity(intent);
     }
 

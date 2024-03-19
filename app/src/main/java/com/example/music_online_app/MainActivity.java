@@ -9,16 +9,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.music_online_app.ListenerInterface.OnSongListClickListener;
 import com.example.music_online_app.adapter.CategoryAdapter;
 import com.example.music_online_app.ListenerInterface.OnCategoryClickListener;
 import com.example.music_online_app.adapter.SectionListAdapter;
 import com.example.music_online_app.models.CategoryModels;
 import com.example.music_online_app.models.SongModels;
+import com.example.music_online_app.online.MyExoPlayer;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
@@ -34,6 +39,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final String CATEGORY_NAME_EXTRA = "category";
+    private final String BAR_CLICK = "isBarClick";
     CategoryAdapter categoryAdapter;
     SectionListAdapter sectionListAdapter;
     RecyclerView recyclerView, section1RecyclerView;
@@ -47,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout section1Layout;
     RelativeLayout section2Layout;
     RecyclerView section2RecyclerView;
+    RelativeLayout playerBarLayout;
+    ImageView barSongImageView;
+    TextView barSongTextView;
 
 
 
@@ -66,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scroll_view);
         section1Layout = findViewById(R.id.section_1_main_layout);
         section2Layout = findViewById(R.id.section_2_main_layout);
+        playerBarLayout = findViewById(R.id.player_bar);
+        barSongImageView = findViewById(R.id.bar_song_image_view);
+        barSongTextView = findViewById(R.id.bar_song_text_view);
 
         textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
 
@@ -73,6 +85,12 @@ public class MainActivity extends AppCompatActivity {
         getSection1FromFirebase();
         getSection2FromFirebase();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showPlayingBar();
     }
     // category
 
@@ -182,6 +200,28 @@ public class MainActivity extends AppCompatActivity {
             this.shimmerFrameLayout.stopShimmerAnimation();
             this.shimmerFrameLayout.setVisibility(View.INVISIBLE);
             this.scrollView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showPlayingBar(){
+        playerBarLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SongPlayerActivity.class);
+                intent.putExtra(BAR_CLICK, true);
+                intent.putExtra("songModels", MyExoPlayer.getCurrentSong());
+                startActivity(intent);
+            }
+        });
+
+        if(MyExoPlayer.getCurrentSong() != null){
+            playerBarLayout.setVisibility(View.VISIBLE);
+            barSongTextView.setText(MyExoPlayer.getCurrentSong().getTitle());
+            Glide.with(barSongImageView).load(MyExoPlayer.getCurrentSong().getCoverUrl())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
+                    .into(barSongImageView);
+        } else {
+            playerBarLayout.setVisibility(View.GONE);
         }
     }
 

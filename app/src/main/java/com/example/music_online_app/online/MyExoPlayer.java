@@ -16,6 +16,9 @@ public class MyExoPlayer {
     public static ExoPlayer getInstance(){
         return player;
     }
+    public static SongModels getCurrentSong(){
+        return currentSong;
+    }
 
     public static void startPlaying(Context context, SongModels songModels){
         if(player == null){

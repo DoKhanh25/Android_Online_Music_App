@@ -33,6 +33,7 @@ public class SongPlayerActivity extends AppCompatActivity {
             Player.Listener.super.onIsPlayingChanged(isPlaying);
             showSongEffectGif(isPlaying);
         }
+
     };
 
     @Override
@@ -51,14 +52,20 @@ public class SongPlayerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         SongModels songModels = (SongModels) intent.getSerializableExtra("songModels");
         String categoryName = (String) intent.getSerializableExtra("albumName");
+        boolean isBarSongClick = (boolean) intent.getSerializableExtra("isBarClick");
 
-        MyExoPlayer.startPlaying(getApplicationContext(), songModels);
+        SongModels songRs = songModels != null ? songModels : MyExoPlayer.getCurrentSong();
+
+        if(songModels != null && categoryName != null){
+            MyExoPlayer.startPlaying(getApplicationContext(), songRs);
+            albumTextView.setText("Album: " + categoryName.toUpperCase());
+        }
+
         exoPlayer = MyExoPlayer.getInstance();
-        songTitleTextView.setText(songModels.getTitle());
-        albumTextView.setText("Album: " + categoryName.toUpperCase());
+        songTitleTextView.setText(songRs.getTitle());
         playerView.showController();
 
-        Glide.with(coverImageView).load(songModels.getCoverUrl())
+        Glide.with(coverImageView).load(songRs.getCoverUrl())
                 .circleCrop()
                 .into(coverImageView);
         Glide.with(songEffectView).load(R.drawable.bhfo)
@@ -68,6 +75,7 @@ public class SongPlayerActivity extends AppCompatActivity {
         exoPlayer.addListener(playerListener);
 
         playerView.setPlayer(exoPlayer);
+
         //
     }
     public void showSongEffectGif(boolean show){
