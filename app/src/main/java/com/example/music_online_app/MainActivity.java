@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import com.example.music_online_app.models.CategoryModels;
 import com.example.music_online_app.models.SongModels;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
@@ -31,18 +33,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final String CATEGORY_NAME_EXTRA = "category";
     CategoryAdapter categoryAdapter;
-
     SectionListAdapter sectionListAdapter;
-
     RecyclerView recyclerView, section1RecyclerView;
-
     TextView textView;
-
     ShimmerFrameLayout shimmerFrameLayout;
     ScrollView scrollView;
     FirebaseAuth mAuth;
+    MaterialButton section1Button;
+    CategoryModels section1Category;
+    RelativeLayout section1Layout;
 
 
 
@@ -56,14 +57,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.categories_recycler_view);
         section1RecyclerView = findViewById(R.id.section_1_recycler_view);
         textView = findViewById(R.id.user_name);
-        textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
-
+        section1Button = findViewById(R.id.btn_section_1);
         shimmerFrameLayout = findViewById(R.id.shimmer_main);
         scrollView = findViewById(R.id.scroll_view);
+        section1Layout = findViewById(R.id.section_1_main_layout);
 
+        textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
 
         getCategoryFromFirebase();
         getSection1FromFirebase();
+
+
+
+        section1Layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
+                intent.putExtra(CATEGORY_NAME_EXTRA, section1Category);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
     // category
 
@@ -104,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("sections").document("section1").get()
                 .addOnSuccessListener(s-> {
                     CategoryModels categoryModels = s.toObject(CategoryModels.class);
+                    this.section1Category = categoryModels;
                     FirebaseFirestore.getInstance().collection("Songs").whereIn("id",categoryModels.getSongs()).get()
                             .addOnSuccessListener(v->{
                         List<SongModels> songModels = v.toObjects(SongModels.class);
@@ -126,8 +141,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     private void turnOnShimmer(boolean turnOn){
         if(turnOn){
             this.shimmerFrameLayout.startShimmerAnimation();
@@ -138,4 +151,6 @@ public class MainActivity extends AppCompatActivity {
             this.scrollView.setVisibility(View.VISIBLE);
         }
     }
+
+
 }
