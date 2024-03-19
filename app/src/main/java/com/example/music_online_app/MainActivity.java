@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
                 intent.putExtra("category", categoryModels);
                 startActivity(intent);
-                finish();
 
             }
         });
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
                 intent.putExtra(CATEGORY_NAME_EXTRA, section1Category);
                 startActivity(intent);
-                finish();
             }
         });
     }
@@ -159,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
                 intent.putExtra(CATEGORY_NAME_EXTRA, section2Category);
                 startActivity(intent);
-                finish();
             }
         });
     }

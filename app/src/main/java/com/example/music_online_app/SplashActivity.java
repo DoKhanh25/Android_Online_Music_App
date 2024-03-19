@@ -53,7 +53,6 @@ public class SplashActivity extends AppCompatActivity {
             Toast.makeText(this, "Không có kết nối mạng", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
             startActivity(intent);
-            finish();
         }
     }
 }

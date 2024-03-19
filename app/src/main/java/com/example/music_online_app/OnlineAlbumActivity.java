@@ -60,7 +60,6 @@ public class OnlineAlbumActivity extends AppCompatActivity {
             Toast.makeText(this, "Không có dữ liệu", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, MainActivity.class);
             startActivity(newIntent);
-            finish();
             return;
         }
 
@@ -117,7 +116,6 @@ public class OnlineAlbumActivity extends AppCompatActivity {
         intent.putExtra(SONG_NAME_EXTRA, songModels);
         intent.putExtra(ALBUM_NAME, categoryModels.getName());
         startActivity(intent);
-        finish();
     }
 
 
