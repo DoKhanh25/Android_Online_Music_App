@@ -6,6 +6,12 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import com.example.music_online_app.models.SongModels;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyExoPlayer {
 
@@ -26,7 +32,7 @@ public class MyExoPlayer {
         }
         if(currentSong == null || !currentSong.equals(songModels)){
             currentSong = songModels;
-
+            updateCount();
             MediaItem mediaItem = MediaItem.fromUri(currentSong.getUrl());
             player.setMediaItem(mediaItem);
             player.prepare();
@@ -39,5 +45,25 @@ public class MyExoPlayer {
         MyExoPlayer.getInstance().stop();
     }
 
+    public static void updateCount(){
+        String currentSongId = currentSong.getId();
+        FirebaseFirestore.getInstance().collection("Songs")
+                .document(currentSongId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Long latestCount = documentSnapshot.getLong("count");
+                        if(latestCount == null){
+                            latestCount = 1L;
+                        } else {
+                            latestCount += 1;
+                        }
+                        Map<String, Object> countMap = new HashMap<>();
+                        countMap.put("count", latestCount);
+                        FirebaseFirestore.getInstance().collection("Songs")
+                                .document(currentSongId)
+                                .update(countMap);
+                    }
+                });
+    }
 
 }
