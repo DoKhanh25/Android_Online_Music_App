@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final String MOST_PLAYED_COVER_URL = "https://firebasestorage.googleapis.com/v0/b/music-online-authentication.appspot.com/o/Categories_images%2Fcat-mostplayed.jpg?alt=media&token=3d822fc7-b1e9-4f26-8af0-fd0ed6e27b2e";
     private final String CATEGORY_NAME_EXTRA = "category";
     private final String BAR_CLICK = "isBarClick";
     CategoryAdapter categoryAdapter;
@@ -56,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout playerBarLayout;
     ImageView barSongImageView;
     TextView barSongTextView;
+
+    // Section Most Played
+    RelativeLayout sectionMostPlayedLayout;
+    RecyclerView sectionMostPlayedRecyclerView;
+    CategoryModels sectionMostPlayedCategory;
 
 
 
@@ -79,11 +86,16 @@ public class MainActivity extends AppCompatActivity {
         barSongImageView = findViewById(R.id.bar_song_image_view);
         barSongTextView = findViewById(R.id.bar_song_text_view);
 
+        // most played view
+        sectionMostPlayedLayout = findViewById(R.id.section_most_played_main_layout);
+        sectionMostPlayedRecyclerView = findViewById(R.id.section_most_played_recycler_view);
+
         textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
 
         getCategoryFromFirebase();
         getSection1FromFirebase();
         getSection2FromFirebase();
+        getMostPlayedSectionFromFirebase();
 
     }
 
@@ -190,6 +202,49 @@ public class MainActivity extends AppCompatActivity {
         section2RecyclerView.setAdapter(sectionListAdapter);
         section2RecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
+
+    // most played section
+    public void getMostPlayedSectionFromFirebase(){
+        FirebaseFirestore.getInstance().collection("Songs")
+                .orderBy("count", Query.Direction.DESCENDING).limit(5L)
+                .get()
+                .addOnSuccessListener(s-> {
+                    List<SongModels> songModels = s.toObjects(SongModels.class);
+                    List<String> songsId = new ArrayList<>();
+                    for (SongModels song: songModels){
+                        songsId.add(song.getId());
+                    }
+                    this.sectionMostPlayedCategory = new CategoryModels();
+                    this.sectionMostPlayedCategory.setName("Most Played");
+                    this.sectionMostPlayedCategory.setCoverUrl(MOST_PLAYED_COVER_URL);
+                    this.sectionMostPlayedCategory.setSongsList(songsId);
+
+                    setupSectionMostPlayed(songModels);
+
+                });
+        sectionMostPlayedLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
+                intent.putExtra(CATEGORY_NAME_EXTRA, sectionMostPlayedCategory);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void setupSectionMostPlayed(List<SongModels> songModelsList){
+        sectionListAdapter = new SectionListAdapter(getApplicationContext(), songModelsList, new OnSongListClickListener() {
+            @Override
+            public void onItemClick(SongModels songModels) {
+
+            }
+        });
+
+        sectionMostPlayedRecyclerView.setAdapter(sectionListAdapter);
+        sectionMostPlayedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
+
 
 
     private void turnOnShimmer(boolean turnOn){

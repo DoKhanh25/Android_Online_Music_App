@@ -106,9 +106,9 @@
            </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/section_1_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/section_1_recycler_view" />
+                android:layout_height="wrap_content" />
 
             <View
                 android:layout_width="match_parent"
@@ -148,6 +148,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/section_2_recycler_view" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/section_most_played_main_layout">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Most Played"
+                    android:id="@+id/section_most_played_title"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="46dp"
+                    android:layout_height="20dp"
+                    android:padding="0dp"
+                    android:text="Xem thêm"
+                    android:textColor="#999999"
+                    android:textSize="5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/black"
+                    app:cornerRadius="5pt"
+                    app:strokeColor="#5A5A5A"
+                    app:strokeWidth="0.5sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/section_most_played_recycler_view" />
 
 
 
