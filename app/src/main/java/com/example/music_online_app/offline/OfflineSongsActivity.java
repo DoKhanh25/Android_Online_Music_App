@@ -9,10 +9,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
-
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,14 +20,23 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.music_online_app.ListenerInterface.OnOfflineSongClickListener;
 import com.example.music_online_app.MainActivity;
 import com.example.music_online_app.R;
+import com.example.music_online_app.SongPlayerActivity;
 import com.example.music_online_app.adapter.OfflineMusicAdapter;
 import com.example.music_online_app.authentication.LoginActivity;
 import com.example.music_online_app.models.OfflineMusicModel;
+import com.example.music_online_app.models.SongModels;
+import com.example.music_online_app.online.MyExoPlayer;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -39,7 +45,9 @@ import java.util.ArrayList;
 public class OfflineSongsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_CODE = 1;
-
+    private final String SONG_NAME_EXTRA = "songModels";
+    private final String ALBUM_NAME = "albumName";
+    private final String BAR_CLICK = "isBarClick";
     public static ArrayList<OfflineMusicModel> offlineMusicModels;
     Toolbar toolbar;
     NavigationView navigationView;
@@ -47,7 +55,9 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
     ActionBarDrawerToggle toggle;
     TextView noMusicTextView;
     RecyclerView recyclerView;
-
+    RelativeLayout playerBarLayout;
+    TextView barSongTextView;
+    ImageView barSongImageView;
     OfflineMusicAdapter offlineMusicAdapter;
 
     @Override
@@ -60,6 +70,9 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
         drawerLayout = findViewById(R.id.drawer_layout);
         recyclerView = findViewById(R.id.offline_recyclerView);
         noMusicTextView = findViewById(R.id.no_music_text_view);
+        playerBarLayout = findViewById(R.id.player_bar);
+        barSongTextView = findViewById(R.id.bar_song_text_view);
+        barSongImageView = findViewById(R.id.bar_song_image_view);
 
         setUpToolbar();
         permission();
@@ -76,15 +89,24 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
             noMusicTextView.setVisibility(View.VISIBLE);
         }
     }
-
     @Override
     protected void onResume() {
         super.onResume();
         checkOfflineSongExist();
+        showPlayingBar();
     }
 
     private void setUpOfflineSongRecylerView(){
-        offlineMusicAdapter = new OfflineMusicAdapter(getApplicationContext(), offlineMusicModels);
+        offlineMusicAdapter = new OfflineMusicAdapter(getApplicationContext(), offlineMusicModels, new OnOfflineSongClickListener() {
+            @Override
+            public void onItemClick(OfflineMusicModel offlineMusicModel) {
+                SongModels songModels = new SongModels();
+                songModels.setSinger(offlineMusicModel.getSinger());
+                songModels.setTitle(offlineMusicModel.getTitle());
+                songModels.setUrl(offlineMusicModel.getPath());
+                navigateActivity(songModels);
+            }
+        });
         recyclerView.setAdapter(offlineMusicAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
@@ -93,18 +115,15 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         navigationView.bringToFront();
-
         toggle = new ActionBarDrawerToggle(this,
                 drawerLayout,
                 toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-
         drawerLayout.addDrawerListener(toggle);
-
-
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_local);
     }
@@ -113,10 +132,7 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
         if(checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.READ_MEDIA_AUDIO}, REQUEST_CODE);
             Toast.makeText(this, "Cấp quyền", Toast.LENGTH_SHORT).show();
-
         } else {
-            Toast.makeText(this, "Cấp quyền thành công", Toast.LENGTH_SHORT).show();
-
             offlineMusicModels = getAllMusicFile(this);
         }
     }
@@ -153,7 +169,6 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
                 String duration = cursor.getString(2);
                 String path = cursor.getString(3);
                 String singer = cursor.getString(4);
-                Log.e("music_info", album + title + duration + path + singer);
 
                 OfflineMusicModel musicFileModel = new OfflineMusicModel();
                 musicFileModel.setAlbum(album);
@@ -161,9 +176,7 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
                 musicFileModel.setDuration(duration);
                 musicFileModel.setPath(path);
                 musicFileModel.setSinger(singer);
-
                 musicFileModelArrayList.add(musicFileModel);
-
             }
             cursor.close();
         }
@@ -211,5 +224,35 @@ public class OfflineSongsActivity extends AppCompatActivity implements Navigatio
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         toggle.syncState();
+    }
+
+    private void navigateActivity(SongModels songModels){
+        Intent intent = new Intent(getApplicationContext(), SongPlayerActivity.class);
+        intent.putExtra(SONG_NAME_EXTRA, songModels);
+        intent.putExtra(ALBUM_NAME, "");
+        intent.putExtra(BAR_CLICK, false);
+        startActivity(intent);
+    }
+
+    private void showPlayingBar(){
+        playerBarLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SongPlayerActivity.class);
+                intent.putExtra(BAR_CLICK, true);
+                intent.putExtra("songModels", MyExoPlayer.getCurrentSong());
+                startActivity(intent);
+            }
+        });
+
+        if(MyExoPlayer.getCurrentSong() != null){
+            playerBarLayout.setVisibility(View.VISIBLE);
+            barSongTextView.setText(MyExoPlayer.getCurrentSong().getTitle());
+            Glide.with(barSongImageView).load(MyExoPlayer.getCurrentSong().getCoverUrl())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
+                    .into(barSongImageView);
+        } else {
+            playerBarLayout.setVisibility(View.GONE);
+        }
     }
 }

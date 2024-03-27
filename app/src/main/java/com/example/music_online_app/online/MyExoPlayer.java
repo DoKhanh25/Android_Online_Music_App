@@ -1,9 +1,16 @@
 package com.example.music_online_app.online;
 
 import android.content.Context;
+import android.net.Uri;
 
+import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DefaultDataSource;
+import androidx.media3.datasource.DefaultDataSourceFactory;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
 import com.example.music_online_app.models.SongModels;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,14 +39,23 @@ public class MyExoPlayer {
         }
         if(currentSong == null || !currentSong.equals(songModels)){
             currentSong = songModels;
-            updateCount();
-            MediaItem mediaItem = MediaItem.fromUri(currentSong.getUrl());
+            if(isOnlinePath(songModels.getUrl())){
+                updateCount();
+            }
+            Uri uri = Uri.parse(songModels.getUrl());
+            MediaItem mediaItem = MediaItem.fromUri(uri);
             player.setMediaItem(mediaItem);
             player.prepare();
             player.play();
         } else {
             player.play();
         }
+    }
+    public static boolean isOnlinePath(String path) {
+        return path != null &&
+                (path.contains("http") || path.contains("https") ||
+                        path.contains(".m3u") ||
+                        path.contains(".pls"));
     }
     public static void stopPlaying(){
         MyExoPlayer.getInstance().stop();

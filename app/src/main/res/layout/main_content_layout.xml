@@ -161,11 +161,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/section_most_played_recycler_view" />
             </LinearLayout>
-
         </ScrollView>
-
     </LinearLayout>
-
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -190,7 +187,6 @@
             android:textColor="@color/white"
             android:layout_centerVertical="true"
             android:paddingHorizontal="16dp"/>
-
     </RelativeLayout>
 
 

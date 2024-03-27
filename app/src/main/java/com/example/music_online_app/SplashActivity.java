@@ -8,14 +8,9 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import com.example.music_online_app.authentication.LoginActivity;
-import com.example.music_online_app.models.CategoryModels;
-import com.example.music_online_app.offline.NoInternetActivity;
 import com.example.music_online_app.offline.OfflineSongsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
 

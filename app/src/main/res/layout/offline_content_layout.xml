@@ -38,5 +38,30 @@
             android:id="@+id/offline_recyclerView"
             />
     </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        android:id="@+id/player_bar">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/bar_song_image_view"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Now playing"
+            android:textSize="18sp"
+            android:id="@+id/bar_song_text_view"
+            android:layout_toEndOf="@+id/bar_song_image_view"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:paddingHorizontal="16dp"/>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

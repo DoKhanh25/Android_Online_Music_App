@@ -33,7 +33,6 @@ public class OnlineAlbumActivity extends AppCompatActivity {
     private final String ALBUM_NAME = "albumName";
     private final String BAR_CLICK = "isBarClick";
 
-
     CategoryModels categoryModels;
 
     public OnlineAlbumActivity(CategoryModels categoryModels){
@@ -63,13 +62,10 @@ public class OnlineAlbumActivity extends AppCompatActivity {
             startActivity(newIntent);
             return;
         }
-
-        //binding
         recyclerView = findViewById(R.id.song_list_recycler_view);
         textView = findViewById(R.id.name_text_view);
         imageView = findViewById(R.id.cover_image_view);
 
-        // set giao diện
         textView.setText(categoryModels.getName());
         Glide.with(imageView).load(categoryModels.getCoverUrl())
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
@@ -84,7 +80,6 @@ public class OnlineAlbumActivity extends AppCompatActivity {
                     List<SongModels> songModelsList = v.toObjects(SongModels.class);
                     setUpRecyclerView(songModelsList);
                 });
-
     }
     public List<SongModels> getListSongInAlbum(List<String> songs, List<SongModels> songModelsList){
         List<SongModels> songModels = new ArrayList<>();

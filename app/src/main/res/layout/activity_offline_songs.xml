@@ -21,8 +21,6 @@
         android:fitsSystemWindows="true"
         android:layout_gravity="start" />
 
-
-
     <include layout="@layout/offline_content_layout"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
