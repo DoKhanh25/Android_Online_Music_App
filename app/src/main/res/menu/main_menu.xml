@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:title="Home"
+            android:icon="@drawable/home"
+            />
+        <item
+            android:id="@+id/nav_local"
+            android:title="My Music"
+            android:icon="@drawable/home"
+            />
+        <item
+            android:id="@+id/nav_album"
+            android:title="Album"
+            android:icon="@drawable/baseline_album"
+            />
+    </group>
+
+    <item android:title="Profile">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_profile"
+                    android:title="profile"
+                    android:icon="@drawable/home"
+                    />
+
+                <item
+                    android:id="@+id/nav_logout"
+                    android:title="Logout"
+                    android:icon="@drawable/home"
+                    />
+            </group>
+        </menu>
+    </item>
+
+    <group android:checkableBehavior="single">
+
+
+
+
+    </group>
+</menu>

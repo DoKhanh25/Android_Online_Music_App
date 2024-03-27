@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.example.music_online_app.authentication.LoginActivity;
 import com.example.music_online_app.models.CategoryModels;
 import com.example.music_online_app.offline.NoInternetActivity;
+import com.example.music_online_app.offline.OfflineSongsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,7 +39,6 @@ public class SplashActivity extends AppCompatActivity {
                 public void run() {
                     if(currentUser != null){
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
                         startActivity(intent);
                         finish();
                     } else {
@@ -51,8 +51,9 @@ public class SplashActivity extends AppCompatActivity {
 
         } else {
             Toast.makeText(this, "Không có kết nối mạng", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), NoInternetActivity.class);
+            Intent intent = new Intent(getApplicationContext(), OfflineSongsActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 }

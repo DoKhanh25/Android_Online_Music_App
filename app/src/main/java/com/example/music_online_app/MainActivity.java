@@ -1,19 +1,24 @@
 package com.example.music_online_app;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -21,31 +26,27 @@ import com.example.music_online_app.ListenerInterface.OnSongListClickListener;
 import com.example.music_online_app.adapter.CategoryAdapter;
 import com.example.music_online_app.ListenerInterface.OnCategoryClickListener;
 import com.example.music_online_app.adapter.SectionListAdapter;
+import com.example.music_online_app.authentication.LoginActivity;
 import com.example.music_online_app.models.CategoryModels;
 import com.example.music_online_app.models.SongModels;
+import com.example.music_online_app.offline.OfflineSongsActivity;
 import com.example.music_online_app.online.MyExoPlayer;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final String MOST_PLAYED_COVER_URL = "https://firebasestorage.googleapis.com/v0/b/music-online-authentication.appspot.com/o/Categories_images%2Fcat-mostplayed.jpg?alt=media&token=3d822fc7-b1e9-4f26-8af0-fd0ed6e27b2e";
     private final String CATEGORY_NAME_EXTRA = "category";
     private final String BAR_CLICK = "isBarClick";
     CategoryAdapter categoryAdapter;
     SectionListAdapter sectionListAdapter;
     RecyclerView recyclerView, section1RecyclerView;
-    TextView textView;
     ShimmerFrameLayout shimmerFrameLayout;
     ScrollView scrollView;
     FirebaseAuth mAuth;
@@ -64,7 +65,12 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView sectionMostPlayedRecyclerView;
     CategoryModels sectionMostPlayedCategory;
 
+    // Navigation
+    ActionBarDrawerToggle toggle;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
 
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.categories_recycler_view);
         section1RecyclerView = findViewById(R.id.section_1_recycler_view);
         section2RecyclerView = findViewById(R.id.section_2_recycler_view);
-        textView = findViewById(R.id.user_name);
+
         section1Button = findViewById(R.id.btn_section_1);
         shimmerFrameLayout = findViewById(R.id.shimmer_main);
         scrollView = findViewById(R.id.scroll_view);
@@ -86,17 +92,22 @@ public class MainActivity extends AppCompatActivity {
         barSongImageView = findViewById(R.id.bar_song_image_view);
         barSongTextView = findViewById(R.id.bar_song_text_view);
 
+
         // most played view
         sectionMostPlayedLayout = findViewById(R.id.section_most_played_main_layout);
         sectionMostPlayedRecyclerView = findViewById(R.id.section_most_played_recycler_view);
 
-        textView.setText("Xin chào " + mAuth.getCurrentUser().getEmail());
+        //setup navigation
+        drawerLayout=findViewById(R.id.drawer_layout);
+        navigationView=findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolBar);
+
+        setupToolBar();
 
         getCategoryFromFirebase();
         getSection1FromFirebase();
         getSection2FromFirebase();
         getMostPlayedSectionFromFirebase();
-
     }
 
     @Override
@@ -105,6 +116,26 @@ public class MainActivity extends AppCompatActivity {
         showPlayingBar();
     }
     // category
+    public void setupToolBar(){
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        navigationView.bringToFront();
+
+        toggle = new ActionBarDrawerToggle(this,
+                drawerLayout,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+
+        drawerLayout.addDrawerListener(toggle);
+
+
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_home);
+    }
+
 
     public void getCategoryFromFirebase(){
 
@@ -129,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), OnlineAlbumActivity.class);
                 intent.putExtra("category", categoryModels);
                 startActivity(intent);
-
             }
         });
         recyclerView.setAdapter(categoryAdapter);
@@ -239,11 +269,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
         sectionMostPlayedRecyclerView.setAdapter(sectionListAdapter);
         sectionMostPlayedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
-
 
 
 
@@ -280,5 +308,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_home:
+                break;
+            case R.id.nav_local:
+                Intent intent = new Intent(this, OfflineSongsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_album:
+                break;
+            case R.id.nav_logout:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent2 = new Intent(this, LoginActivity.class);
+                startActivity(intent2);
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
